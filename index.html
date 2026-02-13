@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MLA In-Text Citation Match Game</title>
+  <title>MLA In-Text Citation Match (Strict)</title>
   <style>
     :root{
       --bg:#f6f7ff;
@@ -12,17 +12,19 @@
       --muted:#475569;
       --border:#dbe3f0;
 
-      --accent:#6366f1;   /* indigo */
-      --accent2:#06b6d4;  /* teal */
-      --accent3:#f59e0b;  /* amber */
+      --accent:#6366f1;
+      --accent2:#06b6d4;
+      --accent3:#f59e0b;
 
       --good:#22c55e;
       --bad:#ef4444;
 
-      --shadow: 0 10px 28px rgba(15,23,42,.10);
-      --radius: 18px;
+      --shadow: 0 14px 34px rgba(15,23,42,.12);
+      --radius: 22px;
     }
+
     *{box-sizing:border-box}
+
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
@@ -32,200 +34,285 @@
         radial-gradient(900px 500px at 90% 10%, rgba(6,182,212,.18), transparent 60%),
         radial-gradient(900px 600px at 50% 110%, rgba(245,158,11,.18), transparent 55%),
         var(--bg);
-      padding:24px 14px 64px;
-    }
-    .wrap{max-width:1100px;margin:0 auto;}
-    header{
-      background:rgba(255,255,255,.92);
-      border:1px solid rgba(219,227,240,.95);
-      border-radius:var(--radius);
-      padding:18px;
-      box-shadow:var(--shadow);
-    }
-    h1{margin:0 0 6px;font-size:clamp(22px,3vw,32px);letter-spacing:-.02em;}
-    .sub{margin:0;color:var(--muted);line-height:1.45}
-    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .chip{
-      font-size:13px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--muted);
+      padding: 28px 16px 80px;
+      font-size: 18px; /* bigger overall text */
+      line-height: 1.65;
     }
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:16px;
+    .wrap{max-width: 900px; margin: 0 auto;}
+
+    header{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(219,227,240,.95);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    h1{
+      margin: 0 0 10px;
+      font-size: clamp(26px, 3.4vw, 38px);
+      letter-spacing: -0.02em;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .sub{
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .chips{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
       margin-top:16px;
     }
-    @media (max-width: 980px){ .grid{grid-template-columns:1fr;} }
+
+    .chip{
+      font-size: 14px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background:#fff;
+      color: var(--muted);
+    }
 
     .card{
-      background:rgba(255,255,255,.92);
-      border:1px solid rgba(219,227,240,.95);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:16px;
-    }
-    h2{margin:0 0 8px;font-size:18px;letter-spacing:-.01em}
-    .tiny{font-size:12px;color:var(--muted)}
-    .hint{
-      margin-top:10px;
-      padding:12px;
-      border-radius:14px;
-      border:1px dashed rgba(71,85,105,.35);
-      background:rgba(255,255,255,.75);
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.35;
+      margin-top: 18px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(219,227,240,.95);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 20px;
     }
 
-    .wc{
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
-      font-size:14px;
-      line-height:1.45;
+    h2{
+      margin: 0 0 12px;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
     }
-    .wc code{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
-    .wc .title{font-weight:900;margin-bottom:8px}
-    .wc .entry{margin:10px 0 0}
+
+    .tiny{
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 0 0 12px;
+    }
 
     .para{
       background:#fff;
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:14px;
-      font-size:15px;
-      line-height:1.55;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 18px;
+      font-size: 18px;
+      line-height: 1.75;
     }
 
     .blank{
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      padding:6px 8px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:rgba(99,102,241,.06);
-      vertical-align:middle;
-      margin: 0 2px;
+      gap:10px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(99,102,241,.25);
+      background: rgba(99,102,241,.07);
+      vertical-align: middle;
+      margin: 0 4px;
     }
+
     .blank input{
-      width:170px;
-      max-width: 46vw;
-      border:1px solid var(--border);
-      border-radius:10px;
-      padding:8px 10px;
-      font-size:14px;
-      outline:none;
+      width: 230px;
+      max-width: 68vw;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 16px;
+      outline: none;
       background:#fff;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
+
     .blank input:focus{
-      border-color: rgba(99,102,241,.6);
-      box-shadow: 0 0 0 4px rgba(99,102,241,.12);
+      border-color: rgba(99,102,241,.65);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.14);
     }
 
     .mark{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      width:22px;height:22px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:13px;
-      border:1px solid var(--border);
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 15px;
+      border: 1px solid var(--border);
       background:#fff;
-      color:var(--muted);
-      flex:0 0 auto;
-    }
-    .mark.good{background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.35); color:#14532d;}
-    .mark.bad{background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.35); color:#7f1d1d;}
-
-    .feedback{
-      margin-top:10px;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid rgba(219,227,240,.95);
-      background:#fff;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.4;
+      color: var(--muted);
+      flex: 0 0 auto;
     }
 
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+    .mark.good{
+      background: rgba(34,197,94,.14);
+      border-color: rgba(34,197,94,.35);
+      color: #14532d;
+    }
+
+    .mark.bad{
+      background: rgba(239,68,68,.14);
+      border-color: rgba(239,68,68,.35);
+      color: #7f1d1d;
+    }
+
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top: 18px;
+    }
+
     .btn{
       appearance:none;
-      border:1px solid var(--border);
+      border: 1px solid var(--border);
       background:#fff;
-      color:var(--ink);
-      padding:10px 12px;
-      border-radius:999px;
+      color: var(--ink);
+      padding: 12px 14px;
+      border-radius: 999px;
       cursor:pointer;
-      font-weight:900;
-      font-size:14px;
+      font-weight: 900;
+      font-size: 15px;
       transition: transform .06s ease, box-shadow .2s ease, opacity .2s ease;
       user-select:none;
     }
-    .btn:hover{box-shadow:0 8px 22px rgba(15,23,42,.10); transform:translateY(-1px);}
-    .btn:active{transform:translateY(0px);}
+    .btn:hover{box-shadow: 0 10px 26px rgba(15,23,42,.12); transform: translateY(-1px);}
+    .btn:active{transform: translateY(0px);}
     .btn.primary{
       border:none;
-      background:linear-gradient(90deg, rgba(99,102,241,1), rgba(6,182,212,1));
+      background: linear-gradient(90deg, rgba(99,102,241,1), rgba(6,182,212,1));
       color:#fff;
     }
 
     .score{
-      margin-top:10px;
+      margin-top: 18px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      font-size:13px;
-      color:var(--muted);
+      color: var(--muted);
+      font-size: 14px;
     }
-    .bar{height:10px;background:rgba(15,23,42,.08);border-radius:999px;overflow:hidden;flex:1;}
-    .fill{height:100%;width:0%;background:linear-gradient(90deg, rgba(245,158,11,1), rgba(6,182,212,1), rgba(99,102,241,1));transition:width .25s ease;border-radius:999px;}
+    .bar{
+      height: 12px;
+      background: rgba(15,23,42,.08);
+      border-radius: 999px;
+      overflow:hidden;
+      flex: 1;
+    }
+    .fill{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(245,158,11,1), rgba(6,182,212,1), rgba(99,102,241,1));
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+
+    .feedback{
+      margin-top: 18px;
+      padding: 16px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(219,227,240,.95);
+      background:#fff;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .wc{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px 16px;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    .wc .entry{margin-top: 14px;}
+    .wc code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 14px;
+      color: #334155;
+    }
 
     details{
-      border:1px solid rgba(219,227,240,.95);
-      background:rgba(255,255,255,.85);
-      border-radius:16px;
-      padding:10px 12px;
-      margin-top:10px;
+      margin-top: 18px;
+      border: 1px solid rgba(219,227,240,.95);
+      background: rgba(255,255,255,.88);
+      border-radius: 18px;
+      padding: 12px 14px;
     }
-    summary{cursor:pointer;font-weight:900;color:var(--ink);}
-    details p{color:var(--muted);margin:10px 0 0;line-height:1.35}
+    summary{
+      cursor:pointer;
+      font-weight: 900;
+      color: var(--ink);
+      font-size: 16px;
+    }
+    details p{
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
 
     .finalBox{
-      border-radius:14px;
-      border:1px solid rgba(219,227,240,.95);
+      margin-top: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(219,227,240,.95);
       background:#fff;
-      padding:12px;
-      margin-top:10px;
+      padding: 16px 16px;
+    }
+    .finalTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .finalTop .label{
+      font-weight: 900;
+      font-size: 16px;
     }
     .finalBox pre{
       margin:0;
-      white-space:pre-wrap;
-      word-break:break-word;
+      white-space: pre-wrap;
+      word-break: break-word;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:14px;
-      line-height:1.35;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #111827;
     }
 
     .toast{
-      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
-      background:rgba(15,23,42,.92);color:#fff;
-      padding:10px 12px;border-radius:999px;font-size:13px;
-      box-shadow:0 16px 30px rgba(15,23,42,.25);
-      opacity:0;pointer-events:none;
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, .92);
+      color:#fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      box-shadow: 0 16px 30px rgba(15,23,42,.25);
+      opacity: 0;
+      pointer-events:none;
       transition: opacity .2s ease, transform .2s ease;
     }
-    .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px);}
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
   </style>
 </head>
 
@@ -234,164 +321,131 @@
     <header>
       <h1>MLA In-Text Citation Match Game</h1>
       <p class="sub">
-        Your job: fill in the blanks with the <b>correct MLA in-text citations</b> that match the Works Cited.
-        This is practice for catching citation mismatches in a research essay draft.
+        Fill the blanks with the correct MLA in-text citations. This is strict mode: each blank has one correct answer.
+        Use the Works Cited below to make sure your in-text citations match.
       </p>
       <div class="chips">
-        <div class="chip"><b>Rule:</b> in-text citations must match Works Cited</div>
-        <div class="chip">Use <b>author</b> (or <b>short title</b>) + <b>page</b> if available</div>
-        <div class="chip">If there’s <b>no page</b>, just use author/title</div>
+        <div class="chip">Strict mode: one correct answer per blank</div>
+        <div class="chip">No page numbers in this set</div>
+        <div class="chip">Type parentheses and quotation marks exactly</div>
       </div>
     </header>
 
-    <div class="grid">
-      <!-- LEFT: Activity -->
-      <section class="card">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;">
-          <h2>Student Draft Paragraph (fix the citations)</h2>
-          <span class="tiny">Type the citation exactly like MLA: (LastName 12) or (“Short Title”)</span>
+    <section class="card">
+      <h2>Student Draft Paragraph</h2>
+      <p class="tiny">Type the citation into each blank. Example format: (“Dental Hygienists”) or (CareerOneStop)</p>
+
+      <div class="para" id="paragraph">
+        <p>
+          For my research essay, I’m looking into the career path for becoming a dental hygienist, because I didn’t realize how many steps there are before you can even apply for jobs.
+          One reason I’m interested is that dental hygienists generally work in clinical settings and spend a lot of time directly with patients, which means communication skills are actually a big part of the job
+          <span class="blank" data-id="b1">( <input aria-label="Blank 1" placeholder="type citation…" /> <span class="mark" aria-hidden="true">?</span> )</span>.
+          Also, the schooling is not just “go to college and you’re done.” Programs usually have specific prerequisite classes and clinical training hours before you can complete the degree
+          <span class="blank" data-id="b2">( <input aria-label="Blank 2" placeholder="type citation…" /> <span class="mark" aria-hidden="true">?</span> )</span>.
+          After school, licensing matters a lot because you can’t practice without meeting state requirements, and Washington requires both an exam and an official credential before someone can work as a hygienist
+          <span class="blank" data-id="b3">( <input aria-label="Blank 3" placeholder="type citation…" /> <span class="mark" aria-hidden="true">?</span> )</span>.
+          Finally, when I looked at a real job posting, the employer expected not only the license, but also specific skills like charting, patient education, and being comfortable in a fast-paced office
+          <span class="blank" data-id="b4">( <input aria-label="Blank 4" placeholder="type citation…" /> <span class="mark" aria-hidden="true">?</span> )</span>.
+          Overall, these sources helped me see that this career is not just one straight step, but a mix of training, licensing, and professional expectations that you have to plan for early.
+        </p>
+      </div>
+
+      <div class="row">
+        <button class="btn primary" id="checkBtn">Check Answers</button>
+        <button class="btn" id="revealBtn">Reveal Answers</button>
+        <button class="btn" id="resetBtn">Reset</button>
+      </div>
+
+      <div class="score">
+        <span id="scoreText">Score: 0 / 4</span>
+        <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
+      </div>
+
+      <div class="feedback" id="feedback">
+        Use the Works Cited section below. The goal is to make sure each in-text citation matches one Works Cited entry.
+      </div>
+
+      <details>
+        <summary>What counts as “strict” here</summary>
+        <p>
+          You must type the parentheses and the quotation marks exactly.
+          This activity does ignore extra spaces and it treats curly quotes the same as straight quotes, but everything else must match.
+        </p>
+      </details>
+
+      <div class="finalBox">
+        <div class="finalTop">
+          <div class="label">Copy your corrected paragraph</div>
+          <button class="btn" id="copyBtn">Copy for Canvas</button>
+        </div>
+        <pre id="finalText">Check your answers, then copy.</pre>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Works Cited</h2>
+      <p class="tiny">Use these entries to build the in-text citations.</p>
+
+      <div class="wc">
+        <div class="entry">
+          U.S. Bureau of Labor Statistics. <i>Dental Hygienists</i>, <i>Occupational Outlook Handbook</i>,
+          U.S. Department of Labor, 2024, <code>https://www.bls.gov/ooh/healthcare/dental-hygienists.htm</code>.
         </div>
 
-        <div class="para" id="paragraph">
-          <p>
-            For my research essay, I’m looking into the career path for becoming a dental hygienist, because I didn’t realize how many steps there are before you can even apply for jobs.
-            One reason I’m interested is that dental hygienists generally work in clinical settings and spend a lot of time directly with patients, which means communication skills are actually a big part of the job
-            <span class="blank" data-id="b1">( <input aria-label="Blank 1" placeholder="type citation…" /> <span class="mark" aria-hidden="true">?</span> )</span>.
-            Also, the schooling is not just “go to college and you’re done.” Programs usually have specific prerequisite classes and clinical training hours before you can complete the degree
-            <span class="blank" data-id="b2">( <input aria-label="Blank 2" placeholder="type citation…" /> <span class="mark" aria-hidden="true">?</span> )</span>.
-            After school, licensing matters a lot because you can’t practice without meeting state requirements, and Washington requires both an exam and an official credential before someone can work as a hygienist
-            <span class="blank" data-id="b3">( <input aria-label="Blank 3" placeholder="type citation…" /> <span class="mark" aria-hidden="true">?</span> )</span>.
-            Finally, when I looked at a real job posting, the employer expected not only the license, but also specific skills like charting, patient education, and being comfortable in a fast-paced office
-            <span class="blank" data-id="b4">( <input aria-label="Blank 4" placeholder="type citation…" /> <span class="mark" aria-hidden="true">?</span> )</span>.
-            Overall, these sources helped me see that this career is not just one straight step, but a mix of training, licensing, and professional expectations that you have to plan for early.
-          </p>
+        <div class="entry">
+          CareerOneStop. “Dental Hygienist License Requirements (Washington).”
+          <i>CareerOneStop</i>, sponsored by the U.S. Department of Labor, 2024,
+          <code>https://www.careeronestop.org/</code>.
         </div>
 
-        <div class="row">
-          <button class="btn primary" id="checkBtn">Check Answers</button>
-          <button class="btn" id="revealBtn">Reveal Answers</button>
-          <button class="btn" id="resetBtn">Reset</button>
+        <div class="entry">
+          Green River College. “Dental Hygiene Program Prerequisites and Clinical Training.”
+          <i>Green River College</i>, 2024, <code>https://www.greenriver.edu/</code>.
         </div>
 
-        <div class="score">
-          <span id="scoreText">Score: 0 / 4</span>
-          <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
+        <div class="entry">
+          Bright Smile Dental. “Dental Hygienist (Part-Time) — Job Posting.”
+          <i>Bright Smile Dental Careers</i>, 2025, <code>https://example.com/jobs</code>.
         </div>
+      </div>
 
-        <div class="feedback" id="feedback">
-          <b>Tip:</b> If the Works Cited starts with an author name, your in-text citation should use that last name.
-          If there is <b>no author</b>, use a <b>shortened title in quotation marks</b>.
-        </div>
-
-        <details>
-          <summary>What this is teaching you (in plain words)</summary>
-          <p>
-            Sometimes people paste citations into a draft without checking if they match the Works Cited.
-            This activity trains you to check: <b>Does the in-text citation “point” to the right Works Cited entry?</b>
-          </p>
-        </details>
-
-        <div class="finalBox">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-            <b>Copy your corrected paragraph</b>
-            <button class="btn" id="copyBtn">Copy for Canvas</button>
-          </div>
-          <pre id="finalText">Use “Check Answers” first, then copy.</pre>
-        </div>
-      </section>
-
-      <!-- RIGHT: Works Cited -->
-      <aside class="card">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;">
-          <h2>Works Cited</h2>
-          <span class="tiny">Use these to build the in-text citations</span>
-        </div>
-
-        <div class="wc">
-          <div class="title">Works Cited (example set)</div>
-
-          <div class="entry">
-            U.S. Bureau of Labor Statistics. <i>Dental Hygienists</i>, <i>Occupational Outlook Handbook</i>,
-            U.S. Department of Labor, 2024, <code>https://www.bls.gov/ooh/healthcare/dental-hygienists.htm</code>.
-          </div>
-
-          <div class="entry">
-            CareerOneStop. “Dental Hygienist License Requirements (Washington).”
-            <i>CareerOneStop</i>, sponsored by the U.S. Department of Labor, 2024,
-            <code>https://www.careeronestop.org/</code>.
-          </div>
-
-          <div class="entry">
-            Green River College. “Dental Hygiene Program Prerequisites and Clinical Training.”
-            <i>Green River College</i>, 2024, <code>https://www.greenriver.edu/</code>.
-          </div>
-
-          <div class="entry">
-            Bright Smile Dental. “Dental Hygienist (Part-Time) — Job Posting.”
-            <i>Bright Smile Dental Careers</i>, 2025, <code>https://example.com/jobs</code>.
-          </div>
-        </div>
-
-        <div class="hint" style="margin-top:12px;">
-          <b>Reminder:</b><br>
-          • If the Works Cited begins with <b>U.S. Bureau of Labor Statistics</b>, your in-text citation uses a <b>short title</b> (because it’s a group author and the title is clearer).<br>
-          • If the Works Cited begins with <b>CareerOneStop</b>, the in-text citation uses <b>CareerOneStop</b> (or the short title).<br>
-          • These sources don’t have page numbers, so your in-text citations will not use a page.
-        </div>
-
-        <details>
-          <summary>Examples of WRONG citations (what mismatch looks like)</summary>
-          <p>
-            • If your Works Cited says <b>CareerOneStop</b> but your in-text says <b>(BLS)</b>, that’s a mismatch.<br>
-            • If your Works Cited has <b>“Dental Hygienists”</b> but your in-text says <b>(“EMT Pathway”)</b>, that’s a mismatch.
-          </p>
-        </details>
-      </aside>
-    </div>
+      <details>
+        <summary>Examples of mismatches</summary>
+        <p>
+          If your Works Cited says CareerOneStop but your in-text citation says (BLS), that does not match.
+          If your Works Cited entry title is Dental Hygienists but your in-text citation uses a different title, that does not match.
+        </p>
+      </details>
+    </section>
   </div>
 
   <div class="toast" id="toast">Copied!</div>
 
   <script>
-    // Safari-friendly JS (no fancy dependencies)
+    // Strict mode: one correct answer per blank.
+    // Notes:
+    // - We ignore extra spaces.
+    // - We treat curly quotes and straight quotes as the same (so students aren't punished for device keyboards).
+    // Everything else must match.
 
-    // Correct answers: allow 2 acceptable formats per blank where it makes sense.
-    // Since these entries have no page numbers, citations should not have page numbers.
-    // Students can use: (CareerOneStop) OR (“Dental Hygienist License Requirements”) etc.
-    var ANSWERS = {
-      b1: {
-        ok: ["(\"Dental Hygienists\")", "(\"Dental Hygienists\")", "(U.S. Bureau of Labor Statistics)", "(Bureau of Labor Statistics)", "(BLS)"],
-        best: "(\"Dental Hygienists\")",
-        hint: "This sentence is about the role/work conditions. Match it to the BLS Dental Hygienists entry. Use a short title like (“Dental Hygienists”)."
-      },
-      b2: {
-        ok: ["(\"Dental Hygiene Program Prerequisites and Clinical Training\")", "(\"Dental Hygiene Program Prerequisites and Clinical Training\")", "(Green River College)", "(\"Dental Hygiene Program\")"],
-        best: "(\"Dental Hygiene Program Prerequisites and Clinical Training\")",
-        hint: "This sentence is about prerequisites/training hours. That matches the Green River College program page. Use a short title or the group author."
-      },
-      b3: {
-        ok: ["(CareerOneStop)", "(\"Dental Hygienist License Requirements\")", "(\"Dental Hygienist License Requirements (Washington)\")"],
-        best: "(CareerOneStop)",
-        hint: "This sentence is about licensing requirements in Washington. That matches the CareerOneStop license entry."
-      },
-      b4: {
-        ok: ["(\"Dental Hygienist (Part-Time) — Job Posting\")", "(\"Dental Hygienist (Part-Time) — Job Posting\")", "(\"Dental Hygienist (Part-Time)\")", "(Bright Smile Dental)"],
-        best: "(Bright Smile Dental)",
-        hint: "This sentence is about a real job posting and skills expected. Match it to the Bright Smile Dental job posting entry."
-      }
+    var STRICT_ANSWERS = {
+      b1: "(\"Dental Hygienists\")",
+      b2: "(\"Dental Hygiene Program Prerequisites and Clinical Training\")",
+      b3: "(CareerOneStop)",
+      b4: "(Bright Smile Dental)"
     };
 
     function norm(s){
       return (s || "")
         .replace(/\s+/g, " ")
         .trim()
-        .replace(/[“”]/g, "\"")   // normalize curly quotes to straight quotes
+        .replace(/[“”]/g, "\"") // curly to straight
         .replace(/\(\s+/g, "(")
         .replace(/\s+\)/g, ")")
         .replace(/"\s*\)/g, "\")");
     }
 
-    function setToast(text){
+    function toast(text){
       var t = document.getElementById("toast");
       t.textContent = text;
       t.classList.add("show");
@@ -406,7 +460,6 @@
       var para = document.getElementById("paragraph");
       var clone = para.cloneNode(true);
 
-      // Replace inputs with typed values
       var blankNodes = clone.querySelectorAll(".blank");
       blankNodes.forEach(function(b){
         var input = b.querySelector("input");
@@ -414,7 +467,6 @@
         b.innerHTML = val ? val : "(_____)";
       });
 
-      // Get text
       var text = clone.innerText.replace(/\s+\n/g, "\n").replace(/\n\s+/g, "\n").trim();
       document.getElementById("finalText").textContent = text;
     }
@@ -424,17 +476,15 @@
       var correct = 0;
       var notes = [];
 
-      blanks.forEach(function(b){
+      blanks.forEach(function(b, idx){
         var id = b.getAttribute("data-id");
         var input = b.querySelector("input");
         var mark = b.querySelector(".mark");
+
         var user = norm(input.value);
-        var ans = ANSWERS[id];
+        var expected = norm(STRICT_ANSWERS[id]);
 
-        var okList = ans.ok.map(norm);
-        var isOk = okList.indexOf(user) !== -1;
-
-        if(isOk){
+        if(user === expected){
           correct++;
           mark.textContent = "✓";
           mark.classList.remove("bad");
@@ -443,21 +493,18 @@
           mark.textContent = "✕";
           mark.classList.remove("good");
           mark.classList.add("bad");
-          notes.push("Blank " + id.toUpperCase() + ": " + ans.hint);
+          notes.push("Blank " + (idx + 1) + " is not correct. Check the matching Works Cited entry and copy the correct citation format.");
         }
       });
 
-      var scoreText = document.getElementById("scoreText");
-      scoreText.textContent = "Score: " + correct + " / 4";
-
-      var fill = document.getElementById("fill");
-      fill.style.width = Math.round((correct/4)*100) + "%";
+      document.getElementById("scoreText").textContent = "Score: " + correct + " / 4";
+      document.getElementById("fill").style.width = Math.round((correct/4)*100) + "%";
 
       var fb = document.getElementById("feedback");
       if(correct === 4){
-        fb.innerHTML = "<b>Nice.</b> All citations match the Works Cited. Now copy your corrected paragraph for Canvas.";
+        fb.textContent = "All correct. Copy your corrected paragraph for Canvas.";
       }else{
-        fb.innerHTML = "<b>Not yet.</b> Fix the ones marked with ✕.<br><br>" + notes.map(function(n){ return "• " + n; }).join("<br>");
+        fb.textContent = notes.join(" ");
       }
 
       updateFinalText();
@@ -468,10 +515,10 @@
       blanks.forEach(function(b){
         var id = b.getAttribute("data-id");
         var input = b.querySelector("input");
-        input.value = ANSWERS[id].best;
+        input.value = STRICT_ANSWERS[id];
       });
       check();
-      setToast("Answers filled");
+      toast("Answers filled");
     }
 
     function resetAll(){
@@ -484,28 +531,13 @@
         mark.classList.remove("good");
         mark.classList.remove("bad");
       });
+
       document.getElementById("scoreText").textContent = "Score: 0 / 4";
       document.getElementById("fill").style.width = "0%";
-      document.getElementById("feedback").innerHTML =
-        "<b>Tip:</b> If the Works Cited starts with an author name, your in-text citation should use that last name. If there is <b>no author</b>, use a <b>shortened title in quotation marks</b>.";
-      document.getElementById("finalText").textContent = "Use “Check Answers” first, then copy.";
-      setToast("Reset");
-    }
-
-    function copyFinal(){
-      updateFinalText();
-      var text = document.getElementById("finalText").textContent;
-
-      // Try modern clipboard first
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(text).then(function(){
-          setToast("Copied for Canvas!");
-        }).catch(function(){
-          fallbackCopy(text);
-        });
-      }else{
-        fallbackCopy(text);
-      }
+      document.getElementById("feedback").textContent =
+        "Use the Works Cited section below. The goal is to make sure each in-text citation matches one Works Cited entry.";
+      document.getElementById("finalText").textContent = "Check your answers, then copy.";
+      toast("Reset");
     }
 
     function fallbackCopy(text){
@@ -515,25 +547,37 @@
       temp.select();
       try{
         document.execCommand("copy");
-        setToast("Copied!");
+        toast("Copied!");
       }catch(e){
-        setToast("Copy failed — select & copy manually");
+        toast("Copy failed — select & copy manually");
       }
       temp.remove();
     }
 
-    // Events
+    function copyFinal(){
+      updateFinalText();
+      var text = document.getElementById("finalText").textContent;
+
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){
+          toast("Copied for Canvas!");
+        }).catch(function(){
+          fallbackCopy(text);
+        });
+      }else{
+        fallbackCopy(text);
+      }
+    }
+
     document.getElementById("checkBtn").addEventListener("click", check);
     document.getElementById("revealBtn").addEventListener("click", reveal);
     document.getElementById("resetBtn").addEventListener("click", resetAll);
     document.getElementById("copyBtn").addEventListener("click", copyFinal);
 
-    // Live update final text as they type (optional, light)
+    // Optional: update the copy box as they type
     getBlanks().forEach(function(b){
       var input = b.querySelector("input");
-      input.addEventListener("input", function(){
-        updateFinalText();
-      });
+      input.addEventListener("input", function(){ updateFinalText(); });
     });
   </script>
 </body>
