@@ -112,6 +112,13 @@
       line-height: 1.75;
     }
 
+    .fix{
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
     .blank{
       display:inline-flex;
       align-items:center;
@@ -314,7 +321,6 @@
       transform: translateX(-50%) translateY(-4px);
     }
 
-    /* Screen-reader-only helper */
     .sr-only{
       position:absolute;
       width:1px;
@@ -335,31 +341,29 @@
       <h1>Mismatch Citations Practice</h1>
       <p class="sub">
         The paragraph below has in-text citations that are wrong but understandable mistakes. Fix each one so it matches the Works Cited.
-        This is strict mode: each blank has one correct answer.
+        This is strict mode: each citation has one correct answer.
       </p>
       <div class="chips">
-        <div class="chip">Fix the mistake in each citation</div>
+        <div class="chip">Edit the citation in each box</div>
         <div class="chip">No page numbers in this set</div>
-        <div class="chip">Type parentheses and quotation marks exactly</div>
+        <div class="chip">Strict checking</div>
       </div>
     </header>
 
     <section class="card">
       <h2>Student Draft Paragraph</h2>
-      <p class="tiny">
-        Each citation box already has a wrong citation. Edit it into the correct one. Use the Works Cited section below.
-      </p>
+      <p class="tiny">Each box already contains a wrong citation. Change it into the correct one.</p>
 
       <div class="para" id="paragraph">
         <p>
           For my research essay, I’m looking into the career path for becoming a dental hygienist, because I didn’t realize how many steps there are before you can even apply for jobs.
           One reason I’m interested is that dental hygienists generally work in clinical settings and spend a lot of time directly with patients, which means communication skills are actually a big part of the job
           <span class="blank" data-id="b1">
+            <span class="fix">Fix:</span>
             (
             <input
-              aria-label="In-text citation for sentence about job conditions and patient interaction"
+              aria-label="Fix the in-text citation for the sentence about job conditions and patient interaction"
               aria-describedby="b1-desc b1-status"
-              placeholder="type citation…"
               value="(BLS)"
             />
             <span class="mark" aria-hidden="true">?</span>
@@ -369,11 +373,11 @@
           </span>.
           Also, the schooling is not just “go to college and you’re done.” Programs usually have specific prerequisite classes and clinical training hours before you can complete the degree
           <span class="blank" data-id="b2">
+            <span class="fix">Fix:</span>
             (
             <input
-              aria-label="In-text citation for sentence about prerequisites and clinical training"
+              aria-label="Fix the in-text citation for the sentence about prerequisites and clinical training"
               aria-describedby="b2-desc b2-status"
-              placeholder="type citation…"
               value="(Bureau of Labor Statistics)"
             />
             <span class="mark" aria-hidden="true">?</span>
@@ -383,11 +387,11 @@
           </span>.
           After school, licensing matters a lot because you can’t practice without meeting state requirements, and Washington requires both an exam and an official credential before someone can work as a hygienist
           <span class="blank" data-id="b3">
+            <span class="fix">Fix:</span>
             (
             <input
-              aria-label="In-text citation for sentence about Washington licensing requirements"
+              aria-label="Fix the in-text citation for the sentence about Washington licensing requirements"
               aria-describedby="b3-desc b3-status"
-              placeholder="type citation…"
               value="(Green River College)"
             />
             <span class="mark" aria-hidden="true">?</span>
@@ -397,11 +401,11 @@
           </span>.
           Finally, when I looked at a real job posting, the employer expected not only the license, but also specific skills like charting, patient education, and being comfortable in a fast-paced office
           <span class="blank" data-id="b4">
+            <span class="fix">Fix:</span>
             (
             <input
-              aria-label="In-text citation for sentence about a job posting and employer expectations"
+              aria-label="Fix the in-text citation for the sentence about a job posting and employer expectations"
               aria-describedby="b4-desc b4-status"
-              placeholder="type citation…"
               value="(CareerOneStop)"
             />
             <span class="mark" aria-hidden="true">?</span>
@@ -419,13 +423,11 @@
         <button class="btn" id="resetBtn">Reset</button>
       </div>
 
-      <!-- Live score region for screen readers -->
       <div class="score" id="scoreLive" aria-live="polite" aria-atomic="true">
         <span id="scoreText">Score: 0 / 4</span>
         <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
       </div>
 
-      <!-- Live feedback region + focus target -->
       <div class="feedback" id="feedback" tabindex="-1" aria-live="polite" aria-atomic="true">
         Fix each citation so it matches the correct Works Cited entry. Then copy your corrected paragraph.
       </div>
@@ -475,10 +477,12 @@
       </div>
 
       <details>
-        <summary>What the original mistakes are (so you can teach it)</summary>
+        <summary>Teacher key (what the mistakes are)</summary>
         <p>
-          Each wrong citation is a common error: using an abbreviation instead of the actual Works Cited entry, mixing up which source matches which sentence,
-          or citing the license source when the sentence is clearly about a job posting.
+          b1 uses an abbreviation that does not appear in the Works Cited.
+          b2 cites the wrong source (it cites BLS instead of the program page).
+          b3 cites the program page instead of the licensing source.
+          b4 cites the licensing source instead of the job posting.
         </p>
       </details>
     </section>
@@ -487,12 +491,6 @@
   <div class="toast" id="toast">Copied!</div>
 
   <script>
-    // Strict mode: exactly one correct answer per blank.
-    // Normalization rules:
-    // - Ignore extra spaces
-    // - Treat curly quotes as straight quotes
-    // Everything else must match exactly.
-
     var STRICT_ANSWERS = {
       b1: "(\"Dental Hygienists\")",
       b2: "(\"Dental Hygiene Program Prerequisites and Clinical Training\")",
@@ -500,7 +498,6 @@
       b4: "(Bright Smile Dental)"
     };
 
-    // Default WRONG values (reset returns to these)
     var WRONG_START = {
       b1: "(BLS)",
       b2: "(Bureau of Labor Statistics)",
@@ -537,6 +534,7 @@
       blankNodes.forEach(function(b){
         var input = b.querySelector("input");
         var val = norm(input ? input.value : "");
+        // keep the visible "Fix:" label out of the copied text
         b.innerHTML = val ? val : "(_____)";
       });
 
@@ -586,8 +584,6 @@
       }
 
       updateFinalText();
-
-      // Move focus so screen readers announce the updated feedback.
       fb.focus();
     }
 
@@ -621,6 +617,7 @@
       fb.textContent = "Fix each citation so it matches the correct Works Cited entry. Then copy your corrected paragraph.";
       document.getElementById("finalText").textContent = "Check your answers, then copy.";
       toast("Reset");
+      updateFinalText();
     }
 
     function fallbackCopy(text){
@@ -657,13 +654,12 @@
     document.getElementById("resetBtn").addEventListener("click", resetAll);
     document.getElementById("copyBtn").addEventListener("click", copyFinal);
 
-    // Keep the copy box updated as they type (optional)
+    // keep copy box updated as they type
     getBlanks().forEach(function(b){
       var input = b.querySelector("input");
       input.addEventListener("input", function(){ updateFinalText(); });
     });
 
-    // Initialize final text
     updateFinalText();
   </script>
 </body>
