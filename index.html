@@ -364,7 +364,7 @@
             <input
               aria-label="Fix the in-text citation for the sentence about job conditions and patient interaction"
               aria-describedby="b1-desc b1-status"
-              value="(BLS)"
+              value="(Dental Hygienists, BLS)"
             />
             <span class="mark" aria-hidden="true">?</span>
             <span class="sr-only" id="b1-desc">This citation should match the Works Cited entry about dental hygienists in the Occupational Outlook Handbook.</span>
@@ -378,7 +378,7 @@
             <input
               aria-label="Fix the in-text citation for the sentence about prerequisites and clinical training"
               aria-describedby="b2-desc b2-status"
-              value="(Bureau of Labor Statistics)"
+              value="(Green River College Dental Hygiene Program)"
             />
             <span class="mark" aria-hidden="true">?</span>
             <span class="sr-only" id="b2-desc">This citation should match the Works Cited entry about a college dental hygiene program page with prerequisites and clinical training.</span>
@@ -392,7 +392,7 @@
             <input
               aria-label="Fix the in-text citation for the sentence about Washington licensing requirements"
               aria-describedby="b3-desc b3-status"
-              value="(Green River College)"
+              value="(CareerOneStop, &quot;Dental Hygienist License Requirements&quot;)"
             />
             <span class="mark" aria-hidden="true">?</span>
             <span class="sr-only" id="b3-desc">This citation should match the Works Cited entry about Washington license requirements for dental hygienists.</span>
@@ -406,7 +406,7 @@
             <input
               aria-label="Fix the in-text citation for the sentence about a job posting and employer expectations"
               aria-describedby="b4-desc b4-status"
-              value="(CareerOneStop)"
+              value="(&quot;Dental Hygienist (Part-Time) — Job Posting&quot;)"
             />
             <span class="mark" aria-hidden="true">?</span>
             <span class="sr-only" id="b4-desc">This citation should match the Works Cited entry for the job posting source.</span>
@@ -480,9 +480,9 @@
         <summary>Teacher key (what the mistakes are)</summary>
         <p>
           b1 uses an abbreviation that does not appear in the Works Cited.
-          b2 cites the wrong source (it cites BLS instead of the program page).
-          b3 cites the program page instead of the licensing source.
-          b4 cites the licensing source instead of the job posting.
+          b2 uses a too-long label instead of just the author/org.
+          b3 mixes the website name and the article title.
+          b4 uses the job posting title instead of the employer name.
         </p>
       </details>
     </section>
@@ -491,7 +491,7 @@
   <div class="toast" id="toast">Copied!</div>
 
   <script>
-    // ✅ FIXED: these now match your current Works Cited entries AND are valid JavaScript
+    // Strict: one exact correct answer per blank (matches your current Works Cited)
     var STRICT_ANSWERS = {
       b1: "(\"Dental Hygienists\")",
       b2: "(Green River College)",
@@ -499,11 +499,12 @@
       b4: "(Bright Smile Dental)"
     };
 
+    // Wrong starts: more obviously wrong but still plausible mistakes
     var WRONG_START = {
-      b1: "(BLS)",
-      b2: "(Bureau of Labor Statistics)",
-      b3: "(Green River College)",
-      b4: "(CareerOneStop)"
+      b1: "(Dental Hygienists, BLS)",
+      b2: "(Green River College Dental Hygiene Program)",
+      b3: "(CareerOneStop, \"Dental Hygienist License Requirements\")",
+      b4: "(\"Dental Hygienist (Part-Time) — Job Posting\")"
     };
 
     function norm(s){
@@ -535,6 +536,7 @@
       blankNodes.forEach(function(b){
         var input = b.querySelector("input");
         var val = norm(input ? input.value : "");
+        // keep the visible "Fix:" label out of the copied text
         b.innerHTML = val ? val : "(_____)";
       });
 
@@ -654,6 +656,7 @@
     document.getElementById("resetBtn").addEventListener("click", resetAll);
     document.getElementById("copyBtn").addEventListener("click", copyFinal);
 
+    // keep copy box updated as they type
     getBlanks().forEach(function(b){
       var input = b.querySelector("input");
       input.addEventListener("input", function(){ updateFinalText(); });
