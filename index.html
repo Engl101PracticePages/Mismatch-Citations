@@ -491,10 +491,11 @@
   <div class="toast" id="toast">Copied!</div>
 
   <script>
+    // ✅ FIXED: these now match your current Works Cited entries AND are valid JavaScript
     var STRICT_ANSWERS = {
       b1: "(\"Dental Hygienists\")",
-      b2: "(\Green River College)",
-      b3: "(Dental Hygenist License Requirments"),
+      b2: "(Green River College)",
+      b3: "(\"Dental Hygienist License Requirements\")",
       b4: "(Bright Smile Dental)"
     };
 
@@ -534,7 +535,6 @@
       blankNodes.forEach(function(b){
         var input = b.querySelector("input");
         var val = norm(input ? input.value : "");
-        // keep the visible "Fix:" label out of the copied text
         b.innerHTML = val ? val : "(_____)";
       });
 
@@ -551,7 +551,7 @@
       var blanks = getBlanks();
       var correct = 0;
 
-      blanks.forEach(function(b, idx){
+      blanks.forEach(function(b){
         var id = b.getAttribute("data-id");
         var input = b.querySelector("input");
         var mark = b.querySelector(".mark");
@@ -654,7 +654,6 @@
     document.getElementById("resetBtn").addEventListener("click", resetAll);
     document.getElementById("copyBtn").addEventListener("click", copyFinal);
 
-    // keep copy box updated as they type
     getBlanks().forEach(function(b){
       var input = b.querySelector("input");
       input.addEventListener("input", function(){ updateFinalText(); });
