@@ -1,659 +1,1024 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mismatch Citations Practice (Strict)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Citation Spin Lab</title>
   <style>
-    :root{
-      --bg:#f6f7ff;
-      --card:#ffffff;
-      --ink:#0f172a;
-      --muted:#475569;
-      --border:#dbe3f0;
-
-      --accent:#6366f1;
-      --accent2:#06b6d4;
-      --accent3:#f59e0b;
-
-      --good:#22c55e;
-      --bad:#ef4444;
-
-      --shadow: 0 14px 34px rgba(15,23,42,.12);
-      --radius: 22px;
+    :root {
+      --paper: #f7f0e6;
+      --paper-2: #fffaf2;
+      --ink: #251f28;
+      --muted: #6f625c;
+      --clay: #a4543d;
+      --clay-dark: #743622;
+      --plum: #342638;
+      --sage: #8c9b7d;
+      --sage-dark: #5f7157;
+      --gold: #c49a4a;
+      --line: rgba(52, 38, 56, .18);
+      --soft-shadow: 0 18px 45px rgba(52, 38, 56, .13);
+      --small-shadow: 0 10px 28px rgba(52, 38, 56, .10);
+      --radius: 28px;
+      --focus: 0 0 0 4px rgba(164, 84, 61, .25);
     }
 
-    *{box-sizing:border-box}
+    * { box-sizing: border-box; }
 
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      color:var(--ink);
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
       background:
-        radial-gradient(1200px 600px at 10% 0%, rgba(99,102,241,.18), transparent 55%),
-        radial-gradient(900px 500px at 90% 10%, rgba(6,182,212,.18), transparent 60%),
-        radial-gradient(900px 600px at 50% 110%, rgba(245,158,11,.18), transparent 55%),
-        var(--bg);
-      padding: 28px 16px 80px;
+        radial-gradient(circle at top left, rgba(196, 154, 74, .24), transparent 32%),
+        radial-gradient(circle at 86% 10%, rgba(140, 155, 125, .25), transparent 30%),
+        linear-gradient(180deg, #f7f0e6 0%, #efe3d4 100%);
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 18px;
-      line-height: 1.65;
+      line-height: 1.55;
     }
 
-    .wrap{max-width: 900px; margin: 0 auto;}
+    button, input, select, textarea { font: inherit; }
 
-    header{
-      background: rgba(255,255,255,.94);
-      border: 1px solid rgba(219,227,240,.95);
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      padding: .75rem 1rem;
+      background: var(--plum);
+      color: #fff;
+      z-index: 999;
+      border-radius: 999px;
+    }
+
+    .skip-link:focus { left: 1rem; }
+
+    .page-shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 70px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--clay-dark);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .score-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: .42rem .72rem;
+      border-radius: 999px;
+      background: rgba(255, 250, 242, .78);
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 20px rgba(52,38,56,.08);
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 800;
+    }
+
+    .pill.done {
+      background: var(--plum);
+      color: #fff7e8;
+      border-color: transparent;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: minmax(300px, .84fr) minmax(0, 1.16fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: rgba(255, 250, 242, .88);
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 22px 20px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--soft-shadow);
     }
 
-    h1{
-      margin: 0 0 10px;
-      font-size: clamp(26px, 3.4vw, 38px);
-      letter-spacing: -0.02em;
-      font-weight: 900;
-      line-height: 1.2;
+    .wheel-panel {
+      padding: clamp(24px, 4vw, 38px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 740px;
+      position: sticky;
+      top: 20px;
     }
 
-    .sub{
+    h1, h2, h3 {
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height: 1.08;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    h1 {
+      font-size: clamp(3.2rem, 8vw, 6.3rem);
+      letter-spacing: -.075em;
+      margin: 10px 0 12px;
+    }
+
+    .intro-copy {
       margin: 0;
       color: var(--muted);
-      font-size: 17px;
-      line-height: 1.55;
+      max-width: 430px;
     }
 
-    .chips{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:16px;
-    }
-
-    .chip{
-      font-size: 14px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background:#fff;
-      color: var(--muted);
-    }
-
-    .card{
-      margin-top: 18px;
-      background: rgba(255,255,255,.94);
-      border: 1px solid rgba(219,227,240,.95);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 22px 20px;
-    }
-
-    h2{
-      margin: 0 0 12px;
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: -0.01em;
-    }
-
-    .tiny{
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-      margin: 0 0 12px;
-    }
-
-    .para{
-      background:#fff;
-      border: 1px solid var(--border);
+    .answer-rule {
+      margin-bottom: 14px;
+      padding: 13px 14px;
       border-radius: 18px;
-      padding: 18px 18px;
-      font-size: 18px;
-      line-height: 1.75;
+      background: rgba(196,154,74,.13);
+      border: 1px solid rgba(196,154,74,.28);
+      color: #6b4f1f;
+      font-size: .95rem;
     }
 
-    .fix{
-      font-size: 14px;
-      color: var(--muted);
-      font-weight: 900;
-      letter-spacing: .02em;
+    .answer-rule strong {
+      color: var(--clay-dark);
     }
 
-    .blank{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding: 8px 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(99,102,241,.25);
-      background: rgba(99,102,241,.07);
-      vertical-align: middle;
-      margin: 0 4px;
+    .wheel-zone {
+      text-align: center;
+      margin: 28px 0;
     }
 
-    .blank input{
-      width: 270px;
-      max-width: 76vw;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 16px;
-      outline: none;
-      background:#fff;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    .wheel-wrap {
+      position: relative;
+      width: min(310px, 76vw);
+      aspect-ratio: 1;
+      margin: 0 auto 20px;
     }
 
-    .blank input:focus{
-      border-color: rgba(99,102,241,.65);
-      box-shadow: 0 0 0 4px rgba(99,102,241,.14);
+    .pointer {
+      position: absolute;
+      left: 50%;
+      top: -8px;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 17px solid transparent;
+      border-right: 17px solid transparent;
+      border-top: 30px solid var(--plum);
+      z-index: 3;
+      filter: drop-shadow(0 3px 4px rgba(0,0,0,.18));
     }
 
-    .mark{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width: 28px;
-      height: 28px;
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: 15px;
-      border: 1px solid var(--border);
-      background:#fff;
-      color: var(--muted);
-      flex: 0 0 auto;
-    }
-
-    .mark.good{
-      background: rgba(34,197,94,.14);
-      border-color: rgba(34,197,94,.35);
-      color: #14532d;
-    }
-
-    .mark.bad{
-      background: rgba(239,68,68,.14);
-      border-color: rgba(239,68,68,.35);
-      color: #7f1d1d;
-    }
-
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top: 18px;
-    }
-
-    .btn{
-      appearance:none;
-      border: 1px solid var(--border);
-      background:#fff;
-      color: var(--ink);
-      padding: 12px 14px;
-      border-radius: 999px;
-      cursor:pointer;
-      font-weight: 900;
-      font-size: 15px;
-      transition: transform .06s ease, box-shadow .2s ease, opacity .2s ease;
-      user-select:none;
-    }
-    .btn:hover{box-shadow: 0 10px 26px rgba(15,23,42,.12); transform: translateY(-1px);}
-    .btn:active{transform: translateY(0px);}
-    .btn.primary{
-      border:none;
-      background: linear-gradient(90deg, rgba(99,102,241,1), rgba(6,182,212,1));
-      color:#fff;
-    }
-
-    .score{
-      margin-top: 18px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-    .bar{
-      height: 12px;
-      background: rgba(15,23,42,.08);
-      border-radius: 999px;
-      overflow:hidden;
-      flex: 1;
-    }
-    .fill{
+    .wheel {
+      width: 100%;
       height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, rgba(245,158,11,1), rgba(6,182,212,1), rgba(99,102,241,1));
-      border-radius: 999px;
-      transition: width .25s ease;
+      border-radius: 50%;
+      border: 11px solid rgba(255,250,242,.95);
+      box-shadow: inset 0 0 0 1px var(--line), 0 18px 36px rgba(52,38,56,.2);
+      background: conic-gradient(
+        from -45deg,
+        #a4543d 0deg 90deg,
+        #c49a4a 90deg 180deg,
+        #8c9b7d 180deg 270deg,
+        #342638 270deg 360deg
+      );
+      transition: transform 1.18s cubic-bezier(.16, .8, .28, 1);
+      position: relative;
+      overflow: hidden;
     }
 
-    .feedback{
-      margin-top: 18px;
-      padding: 16px 16px;
-      border-radius: 18px;
-      border: 1px solid rgba(219,227,240,.95);
-      background:#fff;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.55;
+    .wheel::after {
+      content: "";
+      position: absolute;
+      inset: 34%;
+      border-radius: 50%;
+      background: var(--paper-2);
+      border: 1px solid rgba(52,38,56,.18);
+      box-shadow: 0 10px 20px rgba(52,38,56,.14);
     }
 
-    .wc{
-      background:#fff;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px 16px;
-      font-size: 16px;
-      line-height: 1.65;
-    }
-    .wc .entry{margin-top: 14px;}
-    .wc code{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 14px;
-      color: #334155;
-    }
-
-    details{
-      margin-top: 18px;
-      border: 1px solid rgba(219,227,240,.95);
-      background: rgba(255,255,255,.88);
-      border-radius: 18px;
-      padding: 12px 14px;
-    }
-    summary{
-      cursor:pointer;
-      font-weight: 900;
+    .wheel-label {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: 700;
+      font-size: 1.13rem;
       color: var(--ink);
-      font-size: 16px;
-    }
-    details p{
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.55;
+      z-index: 2;
+      pointer-events: none;
     }
 
-    .finalBox{
-      margin-top: 18px;
+    .button {
+      border: 0;
+      border-radius: 999px;
+      padding: .84rem 1.1rem;
+      cursor: pointer;
+      background: var(--plum);
+      color: #fff;
+      font-weight: 800;
+      box-shadow: var(--small-shadow);
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, opacity .18s ease;
+    }
+
+    .button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(52,38,56,.18); }
+    .button:disabled { opacity: .55; cursor: not-allowed; }
+    .button.clay { background: var(--clay); }
+    .button.sage { background: var(--sage-dark); }
+    .button.secondary { background: transparent; color: var(--plum); border: 1px solid var(--line); box-shadow: none; }
+    .button.small { padding: .6rem .78rem; font-size: .9rem; }
+
+    .wheel-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .round-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .round-status {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
       border-radius: 18px;
-      border: 1px solid rgba(219,227,240,.95);
-      background:#fff;
-      padding: 16px 16px;
-    }
-    .finalTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .finalTop .label{
-      font-weight: 900;
-      font-size: 16px;
-    }
-    .finalBox pre{
-      margin:0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 15px;
-      line-height: 1.5;
-      color: #111827;
+      background: rgba(255,255,255,.52);
+      border: 1px solid rgba(52,38,56,.12);
+      color: var(--muted);
+      font-weight: 700;
     }
 
-    .toast{
+    .round-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(52,38,56,.09);
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .round-status.active {
+      border-color: rgba(164,84,61,.38);
+      background: rgba(164,84,61,.10);
+      color: var(--clay-dark);
+    }
+
+    .round-status.solved {
+      border-color: rgba(95,113,87,.32);
+      background: rgba(140,155,125,.16);
+      color: var(--sage-dark);
+    }
+
+    .round-status.solved .round-dot {
+      background: var(--sage-dark);
+      color: #fff;
+    }
+
+    .challenge-panel {
+      padding: clamp(24px, 4vw, 42px);
+      min-height: 740px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 22px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .challenge-panel::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1px solid rgba(164,84,61,.16);
+      background: radial-gradient(circle, rgba(196,154,74,.18), transparent 68%);
+      pointer-events: none;
+    }
+
+    .challenge-header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: start;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+    }
+
+    .challenge-title h2 {
+      font-size: clamp(2.1rem, 5vw, 4.2rem);
+      letter-spacing: -.055em;
+      margin-bottom: 8px;
+    }
+
+    .challenge-title p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 610px;
+    }
+
+    .round-badge {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: .65rem .85rem;
+      background: rgba(164,84,61,.12);
+      color: var(--clay-dark);
+      font-weight: 900;
+      border: 1px solid rgba(164,84,61,.22);
+    }
+
+    .stage {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: stretch;
+    }
+
+    .empty-state {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 40px;
+      min-height: 430px;
+      border-radius: 26px;
+      background: rgba(255,255,255,.42);
+      border: 1px dashed rgba(52,38,56,.26);
+      color: var(--muted);
+    }
+
+    .empty-state h2 {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      letter-spacing: -.05em;
+      margin-bottom: 12px;
+    }
+
+    .card-stack {
+      display: none;
+      animation: cardIn .28s ease both;
+    }
+
+    .card-stack.visible { display: grid; gap: 18px; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(16px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .sentence-card, .source-card, .answer-card, .feedback-card {
+      border-radius: 24px;
+      border: 1px solid rgba(52,38,56,.14);
+      background: rgba(255,253,248,.9);
+      box-shadow: var(--small-shadow);
+      padding: 20px;
+    }
+
+    .card-label {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: .34rem .58rem;
+      background: rgba(52,38,56,.08);
+      color: var(--plum);
+      font-size: .8rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 12px;
+    }
+
+    .sentence-card p, .source-card p, .answer-card p, .feedback-card p { margin: 0; }
+
+    .sentence-text {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+      line-height: 1.35;
+      color: var(--ink);
+    }
+
+    .source-entry {
+      margin-top: 12px;
+      padding: 15px;
+      border-radius: 18px;
+      background: #fffaf2;
+      border: 1px solid rgba(52,38,56,.12);
+      font-size: .98rem;
+    }
+
+    .source-note {
+      color: var(--muted);
+      margin-top: 10px !important;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      font-size: .84rem;
+      font-weight: 900;
+      color: var(--clay-dark);
+      margin: 0 0 6px;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid rgba(52,38,56,.16);
+      border-radius: 18px;
+      padding: .76rem .82rem;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .mla-note {
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-radius: 18px;
+      background: rgba(196,154,74,.13);
+      border: 1px solid rgba(196,154,74,.28);
+      color: #6b4f1f;
+      font-size: .95rem;
+    }
+
+    .feedback-card {
+      display: none;
+      border-color: rgba(52,38,56,.14);
+      background: rgba(255,250,242,.84);
+      color: var(--muted);
+    }
+
+    .feedback-card.visible { display: block; }
+    .feedback-card.good { border-color: rgba(95,113,87,.38); background: rgba(140,155,125,.16); color: var(--sage-dark); }
+    .feedback-card.needs-work { border-color: rgba(164,84,61,.28); background: rgba(164,84,61,.10); color: var(--clay-dark); }
+
+    .challenge-actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+
+    .left-actions, .right-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .final-screen {
+      display: none;
+      animation: cardIn .28s ease both;
+    }
+
+    .final-screen.visible {
+      display: grid;
+      gap: 18px;
+    }
+
+    .final-message {
+      padding: 24px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, rgba(52,38,56,.96), rgba(116,54,34,.92));
+      color: #fff7e8;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .final-message h2 { color: #fff7e8; font-size: clamp(2.2rem, 5vw, 4rem); letter-spacing: -.05em; margin-bottom: 10px; }
+    .final-message p { color: rgba(255,247,232,.83); margin: 0; }
+
+    .submission-box {
+      width: 100%;
+      min-height: 250px;
+      border-radius: 22px;
+      border: 1px solid rgba(52,38,56,.18);
+      background: rgba(255,253,248,.96);
+      color: var(--ink);
+      padding: 18px;
+      resize: vertical;
+    }
+
+    .toast {
       position: fixed;
       left: 50%;
-      bottom: 20px;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, .92);
-      color:#fff;
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 14px;
-      box-shadow: 0 16px 30px rgba(15,23,42,.25);
+      bottom: 24px;
+      transform: translateX(-50%) translateY(20px);
       opacity: 0;
-      pointer-events:none;
+      pointer-events: none;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: var(--plum);
+      color: #fff;
+      box-shadow: var(--soft-shadow);
       transition: opacity .2s ease, transform .2s ease;
-    }
-    .toast.show{
-      opacity: 1;
-      transform: translateX(-50%) translateY(-4px);
+      z-index: 50;
     }
 
-    .sr-only{
-      position:absolute;
-      width:1px;
-      height:1px;
-      padding:0;
-      margin:-1px;
-      overflow:hidden;
-      clip:rect(0,0,0,0);
-      white-space:nowrap;
-      border:0;
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 40;
+    }
+
+    .confetti span {
+      position: absolute;
+      top: -20px;
+      width: 10px;
+      height: 16px;
+      border-radius: 3px;
+      animation: fall 1.8s ease-out forwards;
+      opacity: .9;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(580deg); opacity: 0; }
+    }
+
+    @media (max-width: 980px) {
+      .game-board { grid-template-columns: 1fr; }
+      .wheel-panel { position: static; min-height: auto; }
+      .challenge-panel { min-height: auto; }
+      .answer-grid { grid-template-columns: 1fr; }
+      .challenge-header { flex-direction: column; }
+    }
+
+    @media (max-width: 620px) {
+      body { font-size: 17px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .score-strip { justify-content: flex-start; }
+      .page-shell { width: min(100% - 20px, 1180px); }
+      .challenge-actions { justify-content: stretch; }
+      .left-actions, .right-actions, .button { width: 100%; }
+      .button { justify-content: center; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .topbar, .wheel-panel, .challenge-header, .challenge-actions, .card-stack, .empty-state, .toast, .confetti { display: none !important; }
+      .page-shell { width: 100%; padding: 0; }
+      .game-board { display: block; }
+      .challenge-panel { box-shadow: none; border: 0; padding: 0; min-height: auto; }
+      .final-screen { display: block !important; }
+      .final-message { background: #fff; color: #000; box-shadow: none; padding: 0; }
+      .final-message h2, .final-message p { color: #000; }
+      .submission-box { border: 1px solid #000; }
     }
   </style>
 </head>
-
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Mismatch Citations Practice</h1>
-      <p class="sub">
-        The paragraph below has in-text citations that are wrong but understandable mistakes. Fix each one so it matches the Works Cited.
-        This is strict mode: each citation has one correct answer.
-      </p>
-      <div class="chips">
-        <div class="chip">Edit the citation in each box</div>
-        <div class="chip">No page numbers in this set</div>
-        <div class="chip">Strict checking</div>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="page-shell">
+    <div class="topbar">
+      <p class="eyebrow">ENG 101 Citation Practice</p>
+      <div class="score-strip" aria-label="round progress">
+        <span class="pill" id="scorePill">Solved: 0 / 4</span>
+        <span class="pill" id="pill-b1">No abbreviation</span>
+        <span class="pill" id="pill-b2">Webpage title</span>
+        <span class="pill" id="pill-b3">Title, not website</span>
+        <span class="pill" id="pill-b4">Employer</span>
       </div>
-    </header>
+    </div>
 
-    <section class="card">
-      <h2>Student Draft Paragraph</h2>
-      <p class="tiny">Each box already contains a wrong citation. Change it into the correct one.</p>
-
-      <div class="para" id="paragraph">
-        <p>
-        This research essay will look into the career path for becoming a dental hygienist. There are many steps a student would need to take before one can apply for jobs.
-          One reason a student might be interested in a dental hygienist career is that they generally work in clinical settings and spend a lot of time directly with patients, which means communication skills are a large part of the job
-          <span class="blank" data-id="b1">
-            <span class="fix">Fix:</span>
-            (
-            <input
-              aria-label="Fix the in-text citation for the sentence about job conditions and patient interaction"
-              aria-describedby="b1-desc b1-status"
-              value="(Dental Hygienists, BLS)"
-            />
-            <span class="mark" aria-hidden="true">?</span>
-            <span class="sr-only" id="b1-desc">This citation should match the Works Cited entry about dental hygienists in the Occupational Outlook Handbook.</span>
-            <span class="sr-only" id="b1-status">Not checked yet.</span>
-            )
-          </span>.
-          Schooling for this career does not just mean, “go to college and you’re done.” Programs have specific prerequisite classes and clinical training hours before one can complete the degree
-          <span class="blank" data-id="b2">
-            <span class="fix">Fix:</span>
-            (
-            <input
-              aria-label="Fix the in-text citation for the sentence about prerequisites and clinical training"
-              aria-describedby="b2-desc b2-status"
-              value="(Green River College Dental Hygiene Program)"
-            />
-            <span class="mark" aria-hidden="true">?</span>
-            <span class="sr-only" id="b2-desc">This citation should match the Works Cited entry about a college dental hygiene program page with prerequisites and clinical training.</span>
-            <span class="sr-only" id="b2-status">Not checked yet.</span>
-            )
-          </span>.
-          After schooling, licensing matters because one can’t practice without meeting state requirements, and Washington requires both an exam and an official credential before someone can work as a hygienist
-          <span class="blank" data-id="b3">
-            <span class="fix">Fix:</span>
-            (
-            <input
-              aria-label="Fix the in-text citation for the sentence about Washington licensing requirements"
-              aria-describedby="b3-desc b3-status"
-              value="(CareerOneStop, &quot;Dental Hygienist License Requirements&quot;)"
-            />
-            <span class="mark" aria-hidden="true">?</span>
-            <span class="sr-only" id="b3-desc">This citation should match the Works Cited entry about Washington license requirements for dental hygienists.</span>
-            <span class="sr-only" id="b3-status">Not checked yet.</span>
-            )
-          </span>.
-          Finally, looking at a real job posting, this employer expects not only the license, but also specific skills like charting, patient education, and being comfortable in a fast-paced office
-          <span class="blank" data-id="b4">
-            <span class="fix">Fix:</span>
-            (
-            <input
-              aria-label="Fix the in-text citation for the sentence about a job posting and employer expectations"
-              aria-describedby="b4-desc b4-status"
-              value="(&quot;Dental Hygienist (Part-Time) — Job Posting&quot;)"
-            />
-            <span class="mark" aria-hidden="true">?</span>
-            <span class="sr-only" id="b4-desc">This citation should match the Works Cited entry for the job posting source.</span>
-            <span class="sr-only" id="b4-status">Not checked yet.</span>
-            )
-          </span>.
-          Overall, these sources help one see that this career is not just one straight step, but a mix of training, licensing, and professional expectations that student's have to plan for early.
-        </p>
-      </div>
-
-      <div class="row">
-        <button class="btn primary" id="checkBtn">Check Answers</button>
-        <button class="btn" id="revealBtn">Reveal Answers</button>
-        <button class="btn" id="resetBtn">Reset</button>
-      </div>
-
-      <div class="score" id="scoreLive" aria-live="polite" aria-atomic="true">
-        <span id="scoreText">Score: 0 / 4</span>
-        <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
-      </div>
-
-      <div class="feedback" id="feedback" tabindex="-1" aria-live="polite" aria-atomic="true">
-        Fix each citation so it matches the correct Works Cited entry. Then copy your corrected paragraph.
-      </div>
-
-      <details>
-        <summary>What counts as strict here</summary>
-        <p>
-          You must type the parentheses and quotation marks exactly. This checker ignores extra spaces and treats curly quotes the same as straight quotes.
-          Everything else must match.
-        </p>
-      </details>
-
-    <section class="card">
-      <h2>Works Cited</h2>
-      <p class="tiny">Use these entries to figure out what the in-text citations should be.</p>
-
-      <div class="wc">
-        <div class="entry">
-         "Dental Hygienists". U.S. Bureau of Labor Statistics, <i>Occupational Outlook Handbook</i>,
-          U.S. Department of Labor, 2024, <code>https://www.bls.gov/ooh/healthcare/dental-hygienists.htm</code>.
+    <main class="game-board" id="main">
+      <section class="panel wheel-panel" aria-label="spin controls">
+        <div>
+          <h1>Citation Spin Lab</h1>
+          <p class="intro-copy">Spin the wheel to reveal one citation challenge at a time. Each round shows one sentence, one source entry, and one citation to fix.</p>
         </div>
 
-        <div class="entry">
-         “Dental Hygienist License Requirements.”
-          <i>CareerOneStop</i>, sponsored by the BLS U.S. Department of Labor, 2024,
-          <code>https://www.careeronestop.org/</code>.
+        <div class="wheel-zone">
+          <div class="wheel-wrap">
+            <div class="pointer" aria-hidden="true"></div>
+            <div class="wheel" id="wheel"></div>
+            <div class="wheel-label">Spin<br>to reveal</div>
+          </div>
+          <div class="wheel-actions">
+            <button class="button clay" type="button" id="spinButton" onclick="spinWheel()">Spin the wheel</button>
+            <button class="button secondary" type="button" onclick="resetGame()">Reset</button>
+          </div>
         </div>
 
-        <div class="entry">
-          Green River College. “Dental Hygiene Program.”
-          <i>Green River College</i>, 2024, <code>https://www.greenriver.edu/</code>.
+        <div class="round-list" aria-label="round list">
+          <div class="round-status" id="status-b1"><span class="round-dot">?</span><span>No abbreviation</span></div>
+          <div class="round-status" id="status-b2"><span class="round-dot">?</span><span>Use the webpage title</span></div>
+          <div class="round-status" id="status-b3"><span class="round-dot">?</span><span>Use the title, not the website name</span></div>
+          <div class="round-status" id="status-b4"><span class="round-dot">?</span><span>Use the employer</span></div>
+        </div>
+      </section>
+
+      <section class="panel challenge-panel" aria-live="polite">
+        <header class="challenge-header">
+          <div class="challenge-title">
+            <h2 id="screenTitle">Ready to spin?</h2>
+            <p id="screenSubtitle">The page will show only one challenge at a time so students are not trying to manage a whole worksheet at once.</p>
+          </div>
+          <span class="round-badge" id="roundBadge">Start</span>
+        </header>
+
+        <div class="stage">
+          <div class="empty-state" id="emptyState">
+            <div>
+              <h2>Spin first.</h2>
+              <p>After the wheel lands, this space will turn into one focused citation round.</p>
+            </div>
+          </div>
+
+          <div class="card-stack" id="cardStack">
+            <article class="sentence-card">
+              <span class="card-label">Sentence from the draft with incorrect in-text citation</span>
+              <p class="sentence-text" id="sentenceText"></p>
+            </article>
+
+            <article class="source-card">
+              <span class="card-label">Full Works Cited source</span>
+              <div class="source-entry" id="sourceEntry"></div>
+              <p class="answer-rule"><strong>Main rule:</strong> Look at the first words of the full Works Cited source. Those words usually tell you what belongs in the in-text citation. If the first words are a title, use the title in quotation marks. If the first words are an author or organization, use that name.</p>
+            </article>
+
+            <article class="answer-card">
+              <span class="card-label">Your fix</span>
+              <div class="answer-grid">
+                <div class="field">
+                  <label for="citationInput">Replace the incorrect citation with the correct one</label>
+                  <input id="citationInput" autocomplete="off" />
+                </div>
+                <div class="field">
+                  <label for="whySelect">What rule are you using?</label>
+                  <select id="whySelect">
+                    <option value="">Choose the rule</option>
+                    <option value="title">Use the title because there is no author</option>
+                    <option value="organization">Use the organization because it is the author</option>
+                  </select>
+                </div>
+              </div>
+              <p class="mla-note">Small MLA reminder: The Works Cited entry may show a period after the title, like “Program Requirements.” In the in-text citation, do not include that period: (“Program Requirements”).</p>
+            </article>
+
+            <article class="feedback-card" id="feedbackCard">
+              <p id="feedbackText"></p>
+            </article>
+          </div>
+
+          <div class="final-screen" id="finalScreen">
+            <div class="final-message">
+              <h2>All rounds solved.</h2>
+              <p>You fixed all four citation mismatches. Copy the corrected paragraph into Canvas, or use Print / Save as PDF if your teacher asks for a PDF.</p>
+            </div>
+            <textarea class="submission-box" id="submissionBox" aria-label="corrected paragraph"></textarea>
+          </div>
         </div>
 
-        <div class="entry">
-          Bright Smile Dental. “Dental Hygienist (Part-Time) — Job Posting.”
-          <i>Bright Smile Dental Careers</i>, 2025, <code>https://example.com/jobs</code>.
-        </div>
-      </div>
-
-      <details>
-        <summary>Answer Key (what the mistakes are)</summary>
-        <p>
-          b1 uses an abbreviation that does not appear in the Works Cited.
-          b2 uses a too-long label instead of just the author/org.
-          b3 mixes the website name and the article title.
-          b4 uses the job posting title instead of the employer name.
-        </p>
-      </details>
-    </section>
+        <footer class="challenge-actions">
+          <div class="left-actions">
+            <button class="button clay" type="button" id="checkButton" onclick="checkCurrent()" disabled>Check this round</button>
+            <button class="button secondary" type="button" id="hintButton" onclick="showHint()" disabled>Show hint</button>
+          </div>
+          <div class="right-actions">
+            <button class="button sage" type="button" id="nextButton" onclick="spinWheel()" disabled>Spin next round</button>
+            <button class="button secondary" type="button" id="copyButton" onclick="copySubmission()" style="display:none;">Copy paragraph</button>
+            <button class="button secondary" type="button" onclick="window.print()">Print / Save as PDF</button>
+          </div>
+        </footer>
+      </section>
+    </main>
   </div>
 
-  <div class="toast" id="toast">Copied!</div>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="status">Copied!</div>
 
   <script>
-    // Strict: one exact correct answer per blank (matches your current Works Cited)
-    var STRICT_ANSWERS = {
-      b1: "(\"Dental Hygienists\")",
-      b2: "(Green River College)",
-      b3: "(\"Dental Hygienist License Requirements\")",
-      b4: "(Bright Smile Dental)"
-    };
+    const rounds = [
+      {
+        id: 'b1',
+        number: 1,
+        badge: 'No abbreviation',
+        sentence: 'One reason a student might be interested in a dental hygienist career is that they generally work in clinical settings and spend a lot of time directly with patients, which means communication skills are a large part of the job (OOH).',
+        sourceType: 'Career Overview',
+        sourceHeading: 'Patient work and communication',
+        sourceClue: 'This source describes what dental hygienists do at work.',
+        sourceEntry: '“Dental Hygienists.” <em>Occupational Outlook Handbook</em>, U.S. Bureau of Labor Statistics, 2024.',
+        starter: '(OOH)',
+        answer: '("Dental Hygienists")',
+        rule: 'title',
+        hint: 'OOH is the handbook title, not the author. Since this source has no author, try the title of the page in quotation marks.',
+        good: 'Correct. Since no author is listed first, the in-text citation uses the title in quotation marks.',
+        ruleBad: 'The citation looks close. Check the rule choice.',
+        answerBad: 'Not quite. Is there an author? If not, try the title.'
+      },
+      {
+        id: 'b2',
+        number: 2,
+        badge: 'Use the webpage title',
+        sentence: 'Schooling for this career does not just mean, “go to college and you’re done.” Programs have specific prerequisite classes and clinical training hours before one can complete the degree (Green River College Dental Hygiene Program).',
+        sourceType: 'College Program',
+        sourceHeading: 'Prerequisites and clinical training',
+        sourceClue: 'This source explains what a student completes in a dental hygiene program.',
+        sourceEntry: '“Dental Hygiene Program.” <em>Green River College</em>, 2024.',
+        starter: '(Green River College Dental Hygiene Program)',
+        answer: '("Dental Hygiene Program")',
+        rule: 'title',
+        hint: 'Green River College is the website name here, not the author. Since this source has no author, try the webpage title in quotation marks.',
+        good: 'Correct. Since no individual author is listed first, the Works Cited entry begins with the webpage title, and the in-text citation uses that title.',
+        ruleBad: 'The citation looks close. Check the rule choice.',
+        answerBad: 'Not quite. Is there an author? If not, try the title.'
+      },
+      {
+        id: 'b3',
+        number: 3,
+        badge: 'Use the title, not the website name',
+        sentence: 'After schooling, licensing matters because one can’t practice without meeting state requirements, and Washington requires both an exam and an official credential before someone can work as a hygienist (CareerOneStop Dental Hygienist License Requirements).',
+        sourceType: 'State License',
+        sourceHeading: 'Exam and credential requirements',
+        sourceClue: 'This source explains what Washington requires before someone can practice.',
+        sourceEntry: '“Dental Hygienist License Requirements.” <em>CareerOneStop</em>, U.S. Department of Labor, 2024.',
+        starter: '(CareerOneStop Dental Hygienist License Requirements)',
+        answer: '("Dental Hygienist License Requirements")',
+        rule: 'title',
+        hint: 'CareerOneStop is the website name, not the author. Since this source has no author, try the title in quotation marks.',
+        good: 'Correct. The in-text citation uses the title, not the website name.',
+        ruleBad: 'The citation looks close. Check the rule choice.',
+        answerBad: 'Not quite. Do not use the website name as the author.'
+      },
+      {
+        id: 'b4',
+        number: 4,
+        badge: 'Use the employer',
+        sentence: 'Finally, looking at a real job posting, this employer expects not only the license, but also specific skills like charting, patient education, and being comfortable in a fast-paced office (Dental Hygienist Part-Time Job Posting).',
+        sourceType: 'Job Posting',
+        sourceHeading: 'Employer expectations',
+        sourceClue: 'This source lists the skills and qualifications one employer expects.',
+        sourceEntry: 'Bright Smile Dental. “Dental Hygienist (Part-Time) Job Posting.” <em>Bright Smile Dental Careers</em>, 2025.',
+        starter: '(Dental Hygienist Part-Time Job Posting)',
+        answer: '(Bright Smile Dental)',
+        rule: 'organization',
+        hint: 'Bright Smile Dental is the employer and author of this job posting. Use the author, not the job title.',
+        good: 'Correct. The employer comes first, so the in-text citation uses Bright Smile Dental.',
+        ruleBad: 'The citation looks close. Check the rule choice.',
+        answerBad: 'Not quite. This source has an organization as its author. Use the organization name.'
+      }
+    ];
 
-    // Wrong starts: more obviously wrong but still plausible mistakes
-    var WRONG_START = {
-      b1: "(Dental Hygienists, BLS)",
-      b2: "(Green River College Dental Hygiene Program)",
-      b3: "(CareerOneStop, \"Dental Hygienist License Requirements\")",
-      b4: "(\"Dental Hygienist (Part-Time) — Job Posting\")"
-    };
+    let currentRound = null;
+    let rotation = 0;
+    let solved = new Set();
+    let celebrated = false;
 
-    function norm(s){
-      return (s || "")
-        .replace(/\s+/g, " ")
-        .trim()
-        .replace(/[“”]/g, "\"")
-        .replace(/\(\s+/g, "(")
-        .replace(/\s+\)/g, ")")
-        .replace(/"\s*\)/g, "\")");
+    function normalize(value) {
+      return value.trim().replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/\s+/g, ' ');
     }
 
-    function toast(text){
-      var t = document.getElementById("toast");
-      t.textContent = text;
-      t.classList.add("show");
-      setTimeout(function(){ t.classList.remove("show"); }, 1200);
+    function remainingRounds() {
+      return rounds.filter(round => !solved.has(round.id));
     }
 
-    function getBlanks(){
-      return Array.prototype.slice.call(document.querySelectorAll(".blank"));
+    function returnToSpinState() {
+      currentRound = null;
+      document.getElementById('cardStack').classList.remove('visible');
+      document.getElementById('finalScreen').classList.remove('visible');
+      document.getElementById('emptyState').style.display = 'grid';
+      document.getElementById('screenTitle').textContent = 'Ready to spin?';
+      document.getElementById('screenSubtitle').textContent = 'Spin the wheel to reveal the next citation challenge.';
+      document.getElementById('roundBadge').textContent = 'Spin';
+      document.getElementById('checkButton').disabled = true;
+      document.getElementById('hintButton').disabled = true;
+      document.getElementById('nextButton').disabled = true;
+      document.querySelectorAll('.round-status').forEach(item => item.classList.remove('active'));
+      document.querySelector('.wheel-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function updateFinalText(){
-      var para = document.getElementById("paragraph");
-      var clone = para.cloneNode(true);
-
-      var blankNodes = clone.querySelectorAll(".blank");
-      blankNodes.forEach(function(b){
-        var input = b.querySelector("input");
-        var val = norm(input ? input.value : "");
-        // keep the visible "Fix:" label out of the copied text
-        b.innerHTML = val ? val : "(_____)";
-      });
-
-      var text = clone.innerText.replace(/\s+\n/g, "\n").replace(/\n\s+/g, "\n").trim();
-      document.getElementById("finalText").textContent = text;
+    function spinNextRound() {
+      returnToSpinState();
+      setTimeout(spinWheel, 420);
     }
 
-    function setBlankStatus(id, text){
-      var statusEl = document.getElementById(id + "-status");
-      if(statusEl) statusEl.textContent = text;
+    function spinWheel() {
+      const remaining = remainingRounds();
+      if (!remaining.length) {
+        showFinal();
+        return;
+      }
+
+      document.getElementById('spinButton').disabled = true;
+      document.getElementById('nextButton').disabled = true;
+      document.getElementById('checkButton').disabled = true;
+      document.getElementById('hintButton').disabled = true;
+      document.getElementById('copyButton').style.display = 'none';
+
+      const pick = remaining[Math.floor(Math.random() * remaining.length)];
+      rotation += 720 + (pick.number * 84) + Math.floor(Math.random() * 34);
+      document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`;
+
+      setTimeout(() => {
+        showRound(pick);
+        document.getElementById('spinButton').disabled = false;
+      }, 900);
     }
 
-    function check(){
-      var blanks = getBlanks();
-      var correct = 0;
+    function showRound(round) {
+      currentRound = round;
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('finalScreen').classList.remove('visible');
+      document.getElementById('cardStack').classList.add('visible');
+      document.getElementById('screenTitle').textContent = round.badge;
+      document.getElementById('screenSubtitle').textContent = 'Use the first words of the full Works Cited source to decide the in-text citation.';
+      document.getElementById('roundBadge').textContent = 'Current challenge';
+      document.getElementById('sentenceText').textContent = round.sentence;
+      document.getElementById('sourceEntry').innerHTML = round.sourceEntry;
+      document.getElementById('citationInput').value = round.starter;
+      document.getElementById('whySelect').value = '';
+      document.getElementById('feedbackCard').className = 'feedback-card';
+      document.getElementById('feedbackText').textContent = '';
+      document.getElementById('checkButton').disabled = false;
+      document.getElementById('hintButton').disabled = false;
+      document.getElementById('nextButton').disabled = true;
 
-      blanks.forEach(function(b){
-        var id = b.getAttribute("data-id");
-        var input = b.querySelector("input");
-        var mark = b.querySelector(".mark");
+      document.querySelectorAll('.round-status').forEach(item => item.classList.remove('active'));
+      document.getElementById(`status-${round.id}`).classList.add('active');
+      document.getElementById('screenTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
-        var user = norm(input.value);
-        var expected = norm(STRICT_ANSWERS[id]);
+    function checkCurrent() {
+      if (!currentRound) return;
+      const citationCorrect = normalize(document.getElementById('citationInput').value) === normalize(currentRound.answer);
+      const ruleCorrect = document.getElementById('whySelect').value === currentRound.rule;
+      const feedbackCard = document.getElementById('feedbackCard');
+      const feedbackText = document.getElementById('feedbackText');
 
-        if(user === expected){
-          correct++;
-          mark.textContent = "✓";
-          mark.classList.remove("bad");
-          mark.classList.add("good");
-          setBlankStatus(id, "Correct.");
-        }else{
-          mark.textContent = "✕";
-          mark.classList.remove("good");
-          mark.classList.add("bad");
-          setBlankStatus(id, "Incorrect.");
+      feedbackCard.classList.add('visible');
+
+      if (citationCorrect && ruleCorrect) {
+        solved.add(currentRound.id);
+        feedbackCard.className = 'feedback-card visible good';
+        feedbackText.textContent = `${currentRound.good} Badge unlocked: ${currentRound.badge}.`;
+        document.getElementById(`pill-${currentRound.id}`).classList.add('done');
+        const status = document.getElementById(`status-${currentRound.id}`);
+        status.classList.remove('active');
+        status.classList.add('solved');
+        status.querySelector('.round-dot').textContent = '✓';
+        updateScore();
+        document.getElementById('checkButton').disabled = true;
+        document.getElementById('hintButton').disabled = true;
+
+        if (solved.size === rounds.length) {
+          document.getElementById('nextButton').textContent = 'Show final paragraph';
+          document.getElementById('nextButton').disabled = false;
+          document.getElementById('nextButton').onclick = showFinal;
+        } else {
+          document.getElementById('nextButton').textContent = 'Spin next round';
+          document.getElementById('nextButton').disabled = false;
+          document.getElementById('nextButton').onclick = spinNextRound;
         }
-      });
-
-      document.getElementById("scoreText").textContent = "Score: " + correct + " / 4";
-      document.getElementById("fill").style.width = Math.round((correct/4)*100) + "%";
-
-      var fb = document.getElementById("feedback");
-      if(correct === 4){
-        fb.textContent = "All correct. Copy your corrected paragraph for Canvas.";
-      }else{
-        fb.textContent = "Not yet. Fix the ones marked with X. Use the Works Cited to match each sentence to the correct source.";
-      }
-
-      updateFinalText();
-      fb.focus();
-    }
-
-    function reveal(){
-      getBlanks().forEach(function(b){
-        var id = b.getAttribute("data-id");
-        var input = b.querySelector("input");
-        input.value = STRICT_ANSWERS[id];
-      });
-      check();
-      toast("Answers filled");
-    }
-
-    function resetAll(){
-      getBlanks().forEach(function(b){
-        var id = b.getAttribute("data-id");
-        var input = b.querySelector("input");
-        var mark = b.querySelector(".mark");
-
-        input.value = WRONG_START[id] || "";
-        mark.textContent = "?";
-        mark.classList.remove("good");
-        mark.classList.remove("bad");
-        setBlankStatus(id, "Not checked yet.");
-      });
-
-      document.getElementById("scoreText").textContent = "Score: 0 / 4";
-      document.getElementById("fill").style.width = "0%";
-
-      var fb = document.getElementById("feedback");
-      fb.textContent = "Fix each citation so it matches the correct Works Cited entry. Then copy your corrected paragraph.";
-      document.getElementById("finalText").textContent = "Check your answers, then copy.";
-      toast("Reset");
-      updateFinalText();
-    }
-
-    function fallbackCopy(text){
-      var temp = document.createElement("textarea");
-      temp.value = text;
-      document.body.appendChild(temp);
-      temp.select();
-      try{
-        document.execCommand("copy");
-        toast("Copied!");
-      }catch(e){
-        toast("Copy failed — select & copy manually");
-      }
-      temp.remove();
-    }
-
-    function copyFinal(){
-      updateFinalText();
-      var text = document.getElementById("finalText").textContent;
-
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(text).then(function(){
-          toast("Copied for Canvas!");
-        }).catch(function(){
-          fallbackCopy(text);
-        });
-      }else{
-        fallbackCopy(text);
+      } else {
+        feedbackCard.className = 'feedback-card visible needs-work';
+        if (!citationCorrect) {
+          feedbackText.textContent = currentRound.answerBad;
+        } else {
+          feedbackText.textContent = currentRound.ruleBad;
+        }
       }
     }
 
-    document.getElementById("checkBtn").addEventListener("click", check);
-    document.getElementById("revealBtn").addEventListener("click", reveal);
-    document.getElementById("resetBtn").addEventListener("click", resetAll);
-    document.getElementById("copyBtn").addEventListener("click", copyFinal);
+    function showHint() {
+      if (!currentRound) return;
+      const feedbackCard = document.getElementById('feedbackCard');
+      const feedbackText = document.getElementById('feedbackText');
+      feedbackCard.className = 'feedback-card visible';
+      feedbackText.textContent = currentRound.hint;
+    }
 
-    // keep copy box updated as they type
-    getBlanks().forEach(function(b){
-      var input = b.querySelector("input");
-      input.addEventListener("input", function(){ updateFinalText(); });
-    });
+    function updateScore() {
+      document.getElementById('scorePill').textContent = `Solved: ${solved.size} / 4`;
+    }
 
-    updateFinalText();
+    function showFinal() {
+      buildSubmission();
+      currentRound = null;
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('cardStack').classList.remove('visible');
+      document.getElementById('finalScreen').classList.add('visible');
+      document.getElementById('screenTitle').textContent = 'Finished';
+      document.getElementById('screenSubtitle').textContent = 'The corrected paragraph is ready to copy or save.';
+      document.getElementById('roundBadge').textContent = 'Complete';
+      document.getElementById('checkButton').disabled = true;
+      document.getElementById('hintButton').disabled = true;
+      document.getElementById('nextButton').disabled = true;
+      document.getElementById('copyButton').style.display = 'inline-flex';
+      if (!celebrated) {
+        launchConfetti();
+        celebrated = true;
+      }
+    }
+
+    function buildSubmission() {
+      const paragraph = `This research essay will look into the career path for becoming a dental hygienist. There are many steps a student would need to take before one can apply for jobs. One reason a student might be interested in a dental hygienist career is that they generally work in clinical settings and spend a lot of time directly with patients, which means communication skills are a large part of the job ("Dental Hygienists"). Schooling for this career does not just mean, “go to college and you’re done.” Programs have specific prerequisite classes and clinical training hours before one can complete the degree ("Dental Hygiene Program"). After schooling, licensing matters because one can’t practice without meeting state requirements, and Washington requires both an exam and an official credential before someone can work as a hygienist ("Dental Hygienist License Requirements"). Finally, looking at a real job posting, this employer expects not only the license, but also specific skills like charting, patient education, and being comfortable in a fast-paced office (Bright Smile Dental). Overall, these sources help one see that this career is not just one straight step, but a mix of training, licensing, and professional expectations that students have to plan for early.`;
+      document.getElementById('submissionBox').value = paragraph;
+    }
+
+    function resetGame() {
+      currentRound = null;
+      solved = new Set();
+      celebrated = false;
+      updateScore();
+      document.getElementById('screenTitle').textContent = 'Ready to spin?';
+      document.getElementById('screenSubtitle').textContent = 'The page will show only one challenge at a time so students are not trying to manage a whole worksheet at once.';
+      document.getElementById('roundBadge').textContent = 'Start';
+      document.getElementById('emptyState').style.display = 'grid';
+      document.getElementById('cardStack').classList.remove('visible');
+      document.getElementById('finalScreen').classList.remove('visible');
+      document.getElementById('checkButton').disabled = true;
+      document.getElementById('hintButton').disabled = true;
+      document.getElementById('nextButton').disabled = true;
+      document.getElementById('nextButton').textContent = 'Spin next round';
+      document.getElementById('nextButton').onclick = spinNextRound;
+      document.getElementById('copyButton').style.display = 'none';
+      rounds.forEach(round => {
+        document.getElementById(`pill-${round.id}`).classList.remove('done');
+        const status = document.getElementById(`status-${round.id}`);
+        status.classList.remove('active', 'solved');
+        status.querySelector('.round-dot').textContent = '?';
+      });
+    }
+
+    async function copySubmission() {
+      buildSubmission();
+      const text = document.getElementById('submissionBox').value;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied corrected paragraph');
+      } catch (error) {
+        document.getElementById('submissionBox').select();
+        showToast('Select and copy the paragraph');
+      }
+    }
+
+    function launchConfetti() {
+      const confetti = document.getElementById('confetti');
+      confetti.innerHTML = '';
+      const colors = ['#a4543d', '#c49a4a', '#8c9b7d', '#342638', '#fff7e8'];
+      for (let i = 0; i < 84; i++) {
+        const piece = document.createElement('span');
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = `${Math.random() * .45}s`;
+        piece.style.transform = `rotate(${Math.random() * 180}deg)`;
+        confetti.appendChild(piece);
+      }
+      setTimeout(() => confetti.innerHTML = '', 2600);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1700);
+    }
   </script>
 </body>
 </html>
