@@ -541,6 +541,8 @@
       resize: vertical;
     }
 
+    .print-submission-box { display: none; white-space: pre-wrap; }
+
     .toast {
       position: fixed;
       left: 50%;
@@ -608,21 +610,11 @@
       .final-screen { display: block !important; }
       .final-message { background: #fff; color: #000; box-shadow: none; padding: 0; }
       .final-message h2, .final-message p { color: #000; }
-      .submission-box { border: 1px solid #000; }
+      textarea.submission-box { display: none !important; }
+      .print-submission-box { display: block !important; border: 1px solid #000; border-radius: 0; min-height: 0; height: auto; overflow: visible; white-space: pre-wrap; }
     }
   </style>
 
-  <style>
-    @media print {
-      textarea {
-        height: auto !important;
-        min-height: 0 !important;
-        overflow: visible !important;
-        resize: none !important;
-        white-space: pre-wrap !important;
-      }
-    }
-  </style>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -724,6 +716,7 @@
               <p>You fixed all four citation mismatches. Copy the corrected paragraph into Canvas, or use Print / Save as PDF if your teacher asks for a PDF.</p>
             </div>
             <textarea class="submission-box" id="submissionBox" aria-label="corrected paragraph"></textarea>
+            <div class="submission-box print-submission-box" id="printSubmissionBox" aria-hidden="true"></div>
           </div>
         </div>
 
@@ -1038,6 +1031,11 @@
       const savedPrintHeights = new Map();
 
       function expandResponsesForPrint() {
+        const submissionBox = document.getElementById('submissionBox');
+        const printSubmissionBox = document.getElementById('printSubmissionBox');
+        if (submissionBox && printSubmissionBox) {
+          printSubmissionBox.textContent = submissionBox.value;
+        }
         document.querySelectorAll('textarea').forEach(function (field) {
           savedPrintHeights.set(field, field.style.height);
           field.style.height = 'auto';
